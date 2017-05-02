@@ -1,1 +1,1 @@
-Playing aroudn with Github.io
+Playing around with Github.io
