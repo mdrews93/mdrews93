@@ -30,3 +30,5 @@ PLUGIN_PATH = './plugins'
 PLUGINS = ['ipynb.markup']
 
 THEME = 'C:/users/mdrews/Documents/pelican-themes/gum'
+
+SUMMARY_MAX_LENGTH = 75
