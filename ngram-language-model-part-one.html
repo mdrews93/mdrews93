@@ -1067,7 +1067,7 @@ h6:hover .anchor-link {
 <h4 id="Dataset-Retrieval">Dataset Retrieval<a class="anchor-link" href="#Dataset-Retrieval">¶</a></h4><p>In short, it turned out that the file created by the app's backup feature didn't contain plain text. This is beneficial for a backup file, because it can dramatically decrease the file's size; however, I wanted the plain text so it was extremely disappointing. Previously I just assumed that messages were stored remotely but in researching the issue, I found out that the messages are actually stored locally on the phone in an SQLite database. Perfect!!</p>
 <p>Since my phone is rooted, I was able to access the file from <code>/data/data/com.google.android.apps.fireball/databases/fireball.db</code></p>
 <p>Then I downloaded Mozilla Firefox and the <a href="https://addons.mozilla.org/en-US/firefox/addon/sqlite-manager/">SQLite Manager Add-On</a> so that I could explore the various tables.</p>
-<p>Since I ultimately want a dataset in CSV or JSON format where each row/record contains a message, the sender, and the text size. It turns out that the two tables that contained this information were named "message" and "Fireball_users." Here's the SQL statement I used to extract just the fields that I wanted:</p>
+<p>I ultimately wanted a dataset in CSV or JSON format where each row/record contains a message, the sender, and the text size. It turns out that the two tables that contained this information were named "message" and "Fireball_users." Here's the SQL statement I used to extract just the fields that I wanted:</p>
 </div>
 </div>
 </div>
@@ -1196,10 +1196,10 @@ h6:hover .anchor-link {
 
 <h4>Tags</h4>
 <ul class="blank">
-	    <li class="tag-[<pelican.contents.Article object at 0x0000019715EDF240>]"><a href="https://mdrews93.github.io/mdrews93/tag/nlp.html">nlp</a></li>
-	    <li class="tag-[<pelican.contents.Article object at 0x0000019715EDF240>, <pelican.contents.Article object at 0x00000197160E1FD0>, <pelican.contents.Article object at 0x00000197132EFA20>]"><a href="https://mdrews93.github.io/mdrews93/tag/python.html">python</a></li>
-	    <li class="tag-[<pelican.contents.Article object at 0x00000197160E1FD0>, <pelican.contents.Article object at 0x00000197132EFA20>]"><a href="https://mdrews93.github.io/mdrews93/tag/volleyball.html">volleyball</a></li>
-	    <li class="tag-[<pelican.contents.Article object at 0x00000197160E1FD0>, <pelican.contents.Article object at 0x00000197132EFA20>]"><a href="https://mdrews93.github.io/mdrews93/tag/stats.html">stats</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x000002B31394BFD0>, <pelican.contents.Article object at 0x000002B313758B70>]"><a href="https://mdrews93.github.io/mdrews93/tag/volleyball.html">volleyball</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x000002B31397D278>]"><a href="https://mdrews93.github.io/mdrews93/tag/nlp.html">nlp</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x000002B31394BFD0>, <pelican.contents.Article object at 0x000002B313758B70>]"><a href="https://mdrews93.github.io/mdrews93/tag/stats.html">stats</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x000002B31397D278>, <pelican.contents.Article object at 0x000002B31394BFD0>, <pelican.contents.Article object at 0x000002B313758B70>]"><a href="https://mdrews93.github.io/mdrews93/tag/python.html">python</a></li>
 </ul>
 
 
