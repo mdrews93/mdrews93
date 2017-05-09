@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+        <title>NGram Language Model Part Two</title>
+        <meta charset="utf-8" />
+
+
+        <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+        <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1">
+
+        <link rel="stylesheet" type="text/css" href="/theme/gumby.css" />
+        <link rel="stylesheet" type="text/css" href="/theme/style.css" />
+        <link rel="stylesheet" type="text/css" href="/theme/pygment.css" />
+
+        <script src="/theme/js/libs/modernizr-2.6.2.min.js"></script>
+
+
+
+
+</head>
+
+<body id="index" class="home">
+
+
+    <div class="container">
+
+        <div class="row">
+
+          <header id="banner" class="body">
+                  <h1><a href="/">Michael's Blog <strong></strong></a></h1>
+          </header><!-- /#banner -->
+
+            <div id="navigation" class="navbar row">
+              <a href="#" gumby-trigger="#navigation &gt; ul" class="toggle"><i class="icon-menu"></i></a>
+             
+              <ul class="columns">
+                <li><a href="/">Home</a></li>
+
+                <li><a href="/pages/about.html">About</a></li>
+                <li><a href="/pages/contact.html">Contact</a></li>
+
+
+              </ul>
+            </div>
+
+<section id="content" class="body">
+
+   <div class="row">
+        <div class="eleven columns">
+
+
+            <header>
+              <h2 class="entry-title">
+                <a href="/ngram-language-model-part-two.html" rel="bookmark"
+                   title="Permalink to NGram Language Model Part Two">NGram Language Model Part Two</a></h2>
+           
+            </header>
+            <footer class="post-info">
+              <abbr class="published" title="2017-05-08T22:00:00-05:00">
+                Mon 08 May 2017
+              </abbr>
+              <address class="vcard author">By 
+                <a class="url fn" href="/author/michael-drews.html"> Michael Drews</a>
+              </address>
+            </footer><!-- /.post-info -->
+            <div class="entry-content">
+              <style type="text/css">/*!
+*
+* IPython notebook
+*
+*/
+/* CSS font colors for translated ANSI colors. */
+.ansibold {
+  font-weight: bold;
+}
+/* use dark versions for foreground, to improve visibility */
+.ansiblack {
+  color: black;
+}
+.ansired {
+  color: darkred;
+}
+.ansigreen {
+  color: darkgreen;
+}
+.ansiyellow {
+  color: #c4a000;
+}
+.ansiblue {
+  color: darkblue;
+}
+.ansipurple {
+  color: darkviolet;
+}
+.ansicyan {
+  color: steelblue;
+}
+.ansigray {
+  color: gray;
+}
+/* and light for background, for the same reason */
+.ansibgblack {
+  background-color: black;
+}
+.ansibgred {
+  background-color: red;
+}
+.ansibggreen {
+  background-color: green;
+}
+.ansibgyellow {
+  background-color: yellow;
+}
+.ansibgblue {
+  background-color: blue;
+}
+.ansibgpurple {
+  background-color: magenta;
+}
+.ansibgcyan {
+  background-color: cyan;
+}
+.ansibggray {
+  background-color: gray;
+}
+div.cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  width: 100%;
+  padding: 5px;
+  /* This acts as a spacer between cells, that is outside the border */
+  margin: 0px;
+  outline: none;
+  border-left-width: 1px;
+  padding-left: 5px;
+  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+}
+div.cell.jupyter-soft-selected {
+  border-left-color: #90CAF9;
+  border-left-color: #E3F2FD;
+  border-left-width: 1px;
+  padding-left: 5px;
+  border-right-color: #E3F2FD;
+  border-right-width: 1px;
+  background: #E3F2FD;
+}
+@media print {
+  div.cell.jupyter-soft-selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected {
+  border-color: #ababab;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  div.cell.selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected.jupyter-soft-selected {
+  border-left-width: 0;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
+}
+.edit_mode div.cell.selected {
+  border-color: #66BB6A;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  .edit_mode div.cell.selected {
+    border-color: transparent;
+  }
+}
+.prompt {
+  /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+  min-width: 14ex;
+  /* This padding is tuned to match the padding on the CodeMirror editor. */
+  padding: 0.4em;
+  margin: 0px;
+  font-family: monospace;
+  text-align: right;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+  /* Don't highlight prompt number selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Use default cursor */
+  cursor: default;
+}
+@media (max-width: 540px) {
+  .prompt {
+    text-align: left;
+  }
+}
+div.inner_cell {
+  min-width: 0;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+  border: 1px solid #cfcfcf;
+  border-radius: 2px;
+  background: #f7f7f7;
+  line-height: 1.21429em;
+}
+/* This is needed so that empty prompt areas can collapse to zero height when there
+   is no content in the output_subarea and the prompt. The main purpose of this is
+   to make sure that empty JavaScript output_subareas have no height. */
+div.prompt:empty {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+div.unrecognized_cell {
+  padding: 5px 5px 5px 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.unrecognized_cell .inner_cell {
+  border-radius: 2px;
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+  border: 1px solid #cfcfcf;
+  background: #eaeaea;
+}
+div.unrecognized_cell .inner_cell a {
+  color: inherit;
+  text-decoration: none;
+}
+div.unrecognized_cell .inner_cell a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+@media (max-width: 540px) {
+  div.unrecognized_cell > div.prompt {
+    display: none;
+  }
+}
+div.code_cell {
+  /* avoid page breaking on code cells when printing */
+}
+@media print {
+  div.code_cell {
+    page-break-inside: avoid;
+  }
+}
+/* any special styling for code cells that are currently running goes here */
+div.input {
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.input {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_prompt {
+  color: #303F9F;
+  border-top: 1px solid transparent;
+}
+div.input_area > div.highlight {
+  margin: 0.4em;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+div.input_area > div.highlight > pre {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+/* The following gets added to the <head> if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font.
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+.CodeMirror {
+  line-height: 1.21429em;
+  /* Changed from 1em to our global default */
+  font-size: 14px;
+  height: auto;
+  /* Changed to auto to autogrow */
+  background: none;
+  /* Changed from white to allow our bg to show through */
+}
+.CodeMirror-scroll {
+  /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+  /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.CodeMirror-lines {
+  /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
+  /* we have set a different line-height and want this to scale with that. */
+  padding: 0.4em;
+}
+.CodeMirror-linenumber {
+  padding: 0 8px 0 4px;
+}
+.CodeMirror-gutters {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+.CodeMirror pre {
+  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
+  /* .CodeMirror-lines */
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+Adapted from GitHub theme
+
+*/
+.highlight-base {
+  color: #000;
+}
+.highlight-variable {
+  color: #000;
+}
+.highlight-variable-2 {
+  color: #1a1a1a;
+}
+.highlight-variable-3 {
+  color: #333333;
+}
+.highlight-string {
+  color: #BA2121;
+}
+.highlight-comment {
+  color: #408080;
+  font-style: italic;
+}
+.highlight-number {
+  color: #080;
+}
+.highlight-atom {
+  color: #88F;
+}
+.highlight-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.highlight-builtin {
+  color: #008000;
+}
+.highlight-error {
+  color: #f00;
+}
+.highlight-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.highlight-meta {
+  color: #AA22FF;
+}
+/* previously not defined, copying from default codemirror */
+.highlight-def {
+  color: #00f;
+}
+.highlight-string-2 {
+  color: #f50;
+}
+.highlight-qualifier {
+  color: #555;
+}
+.highlight-bracket {
+  color: #997;
+}
+.highlight-tag {
+  color: #170;
+}
+.highlight-attribute {
+  color: #00c;
+}
+.highlight-header {
+  color: blue;
+}
+.highlight-quote {
+  color: #090;
+}
+.highlight-link {
+  color: #00c;
+}
+/* apply the same style to codemirror */
+.cm-s-ipython span.cm-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-atom {
+  color: #88F;
+}
+.cm-s-ipython span.cm-number {
+  color: #080;
+}
+.cm-s-ipython span.cm-def {
+  color: #00f;
+}
+.cm-s-ipython span.cm-variable {
+  color: #000;
+}
+.cm-s-ipython span.cm-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-variable-2 {
+  color: #1a1a1a;
+}
+.cm-s-ipython span.cm-variable-3 {
+  color: #333333;
+}
+.cm-s-ipython span.cm-comment {
+  color: #408080;
+  font-style: italic;
+}
+.cm-s-ipython span.cm-string {
+  color: #BA2121;
+}
+.cm-s-ipython span.cm-string-2 {
+  color: #f50;
+}
+.cm-s-ipython span.cm-meta {
+  color: #AA22FF;
+}
+.cm-s-ipython span.cm-qualifier {
+  color: #555;
+}
+.cm-s-ipython span.cm-builtin {
+  color: #008000;
+}
+.cm-s-ipython span.cm-bracket {
+  color: #997;
+}
+.cm-s-ipython span.cm-tag {
+  color: #170;
+}
+.cm-s-ipython span.cm-attribute {
+  color: #00c;
+}
+.cm-s-ipython span.cm-header {
+  color: blue;
+}
+.cm-s-ipython span.cm-quote {
+  color: #090;
+}
+.cm-s-ipython span.cm-link {
+  color: #00c;
+}
+.cm-s-ipython span.cm-error {
+  color: #f00;
+}
+.cm-s-ipython span.cm-tab {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+  background-position: right;
+  background-repeat: no-repeat;
+}
+div.output_wrapper {
+  /* this position must be relative to enable descendents to be absolute within it */
+  position: relative;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 1;
+}
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  overflow: auto;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  display: block;
+}
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin: 0px;
+  padding: 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px 0.4em;
+  position: absolute;
+  border-radius: 2px;
+}
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  -webkit-box-shadow: inset 0 0 1px #000;
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+div.output_prompt {
+  color: #D84315;
+}
+/* This class is the outer container of all output sections. */
+div.output_area {
+  padding: 0px;
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.output_area .MathJax_Display {
+  text-align: left !important;
+}
+div.output_area 
+div.output_area 
+div.output_area img,
+div.output_area svg {
+  max-width: 100%;
+  height: auto;
+}
+div.output_area img.unconfined,
+div.output_area svg.unconfined {
+  max-width: none;
+}
+/* This is needed to protect the pre formating from global settings such
+   as that of bootstrap */
+.output {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.output_area {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+div.output_area pre {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  color: black;
+  background-color: transparent;
+  border-radius: 0;
+}
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+  overflow-x: auto;
+  padding: 0.4em;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+  max-width: calc(100% - 14ex);
+}
+div.output_scroll div.output_subarea {
+  overflow-x: visible;
+}
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+/* all text output has this class: */
+div.output_text {
+  text-align: left;
+  color: #000;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+}
+/* stdout/stderr are 'text' as well as 'stream', but execute_result/error are *not* streams */
+div.output_stderr {
+  background: #fdd;
+  /* very light red background for stderr */
+}
+div.output_latex {
+  text-align: left;
+}
+/* Empty output_javascript divs should have no height */
+div.output_javascript:empty {
+  padding: 0;
+}
+.js-error {
+  color: darkred;
+}
+/* raw_input styles */
+div.raw_input_container {
+  line-height: 1.21429em;
+  padding-top: 5px;
+}
+pre.raw_input_prompt {
+  /* nothing needed here. */
+}
+input.raw_input {
+  font-family: monospace;
+  font-size: inherit;
+  color: inherit;
+  width: auto;
+  /* make sure input baseline aligns with prompt */
+  vertical-align: baseline;
+  /* padding + margin = 0.5em between prompt and cursor */
+  padding: 0em 0.25em;
+  margin: 0em 0.25em;
+}
+input.raw_input:focus {
+  box-shadow: none;
+}
+p.p-space {
+  margin-bottom: 10px;
+}
+div.output_unrecognized {
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+}
+div.output_unrecognized a {
+  color: inherit;
+  text-decoration: none;
+}
+div.output_unrecognized a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.rendered_html {
+  color: #000;
+  /* any extras will just be numbers: */
+}
+
+
+
+.rendered_html :link {
+  text-decoration: underline;
+}
+.rendered_html :visited {
+  text-decoration: underline;
+}
+
+
+
+
+
+
+.rendered_html h1:first-child {
+  margin-top: 0.538em;
+}
+.rendered_html h2:first-child {
+  margin-top: 0.636em;
+}
+.rendered_html h3:first-child {
+  margin-top: 0.777em;
+}
+.rendered_html h4:first-child {
+  margin-top: 1em;
+}
+.rendered_html h5:first-child {
+  margin-top: 1em;
+}
+.rendered_html h6:first-child {
+  margin-top: 1em;
+}
+
+
+
+
+
+
+
+
+.rendered_html * + ul {
+  margin-top: 1em;
+}
+.rendered_html * + ol {
+  margin-top: 1em;
+}
+
+
+.rendered_html pre,
+
+
+
+.rendered_html tr,
+.rendered_html th,
+
+.rendered_html td,
+
+
+.rendered_html * + table {
+  margin-top: 1em;
+}
+
+.rendered_html * + p {
+  margin-top: 1em;
+}
+
+.rendered_html * + img {
+  margin-top: 1em;
+}
+.rendered_html img,
+
+.rendered_html img.unconfined,
+
+div.text_cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.text_cell > div.prompt {
+    display: none;
+  }
+}
+div.text_cell_render {
+  /*font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;*/
+  outline: none;
+  resize: none;
+  width: inherit;
+  border-style: none;
+  padding: 0.5em 0.5em 0.5em 0.4em;
+  color: #000;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+a.anchor-link:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .anchor-link,
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+h5:hover .anchor-link,
+h6:hover .anchor-link {
+  visibility: visible;
+}
+.text_cell.rendered .input_area {
+  display: none;
+}
+.text_cell.rendered 
+.text_cell.unrendered .text_cell_render {
+  display: none;
+}
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.cm-header-1 {
+  font-size: 185.7%;
+}
+.cm-header-2 {
+  font-size: 157.1%;
+}
+.cm-header-3 {
+  font-size: 128.6%;
+}
+.cm-header-4 {
+  font-size: 110%;
+}
+.cm-header-5 {
+  font-size: 100%;
+  font-style: italic;
+}
+.cm-header-6 {
+  font-size: 100%;
+  font-style: italic;
+}
+</style>
+<style type="text/css">.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sa { color: #BA2121 } /* Literal.String.Affix */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .dl { color: #BA2121 } /* Literal.String.Delimiter */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .fm { color: #0000FF } /* Name.Function.Magic */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .vm { color: #19177C } /* Name.Variable.Magic */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
+<style type="text/css">
+/* Temporary definitions which will become obsolete with Notebook release 5.0 */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+</style>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Generating-N-grams">Generating N-grams<a class="anchor-link" href="#Generating-N-grams">¶</a></h4><p>First we want a method to quickly generate a list of n-grams given a list of words.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">iter_ngrams</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">"""Return a generator over ngrams of a document.</span>
+<span class="sd">    Params:</span>
+<span class="sd">      doc...list of tokens</span>
+<span class="sd">      n.....size of ngrams"""</span>
+    <span class="c1"># doc[i: i+n] creates a list of elements from index i to i+n</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">i</span><span class="o">+</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span><span class="o">-</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Given a list where each element is a word in a sentence, the iter_ngrams() function returns a generator over the ngrams from the sentence. For example:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sentence</span> <span class="o">=</span> <span class="s2">"The car drove down the street."</span>
+
+<span class="nb">list</span><span class="p">(</span><span class="n">iter_ngrams</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="mi">3</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[3]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>[['The', 'car', 'drove'],
+ ['car', 'drove', 'down'],
+ ['drove', 'down', 'the'],
+ ['down', 'the', 'street.']]</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Since <code>sentence</code> is one single string, I call <code>.split()</code> on it to convert it into a list where each element is a word in the sentence.</p>
+<p>From the dataset, I'll have a dictionary where the key is a name (or ID) and the value is a list of sentences. So for each sentence, I'll need to create its ngrams and then update a count that keeps track of the frequency of each ngram. 
+I'll use a Counter to keep track of the ngram frequencies. A Counter is a special version of a dictionary that is perfect for keeping track of counts (who would've guessed!).</p>
+<p>The key will be the n-1 words of the ngram and the value will be a Counter dictionary that keeps track of the count of all of the words that follow from the n-1 words. It's easier to see an example of this data structure.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Counter</span>
+
+<span class="n">names_dict</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="c1"># An example dictionary</span>
+<span class="n">names_dict</span><span class="p">[</span><span class="s1">'Michael'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'hello there friend.'</span><span class="p">,</span> 
+                         <span class="s1">'how have you been today?'</span><span class="p">,</span>
+                         <span class="s1">'have you slept today?'</span><span class="p">]</span>
+
+<span class="n">sentences</span> <span class="o">=</span> <span class="n">names_dict</span><span class="p">[</span><span class="s1">'Michael'</span><span class="p">]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">counts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Counter</span><span class="p">())</span>
+
+<span class="c1"># for each sentence</span>
+<span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+    <span class="c1"># convert the sentence into a list of ngrams</span>
+    <span class="c1"># then for each ngram in that list of ngrams, update the count</span>
+    <span class="k">for</span> <span class="n">ngram</span> <span class="ow">in</span> <span class="n">iter_ngrams</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">n</span><span class="p">):</span>
+        <span class="c1"># Create a tuple of the n-1 words and then use this as a key to</span>
+        <span class="c1"># access the Counter. Update the counter using the nth word.</span>
+        <span class="n">counts</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">ngram</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">ngram</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+        
+<span class="nb">print</span><span class="p">(</span><span class="s1">'counts=</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>counts=
+ (('have', 'you'), Counter({'been': 1, 'slept': 1}))
+(('you', 'been'), Counter({'today?': 1}))
+(('how', 'have'), Counter({'you': 1}))
+(('hello', 'there'), Counter({'friend.': 1}))
+(('you', 'slept'), Counter({'today?': 1}))
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We can see that in the sample dataset, <code>'how have'</code> was followed by <code>'you'</code>. Moreover, <code>'have you'</code> occurred twice and was followed by <code>'slept'</code> once and <code>'been'</code> once. 
+In order to convert these to probabilities, I iterate over all of the counters, sum up the total counts and divide each count by the total. For this small sample dataset, the probability of <code>'how have'</code> being followed by <code>'you'</code> is 100%. As for <code>'have you'</code>, 50% of the time it was followed by <code>'slept'</code> and 50% of the time it was followed by <code>'been'</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [5]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">ngram</span><span class="p">,</span> <span class="n">word_counts</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">word_counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">counts</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">word</span><span class="p">:</span> <span class="n">count</span> <span class="o">/</span> <span class="n">total</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">word_counts</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">counts=</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+counts=
+ (('have', 'you'), {'been': 0.5, 'slept': 0.5})
+(('you', 'been'), {'today?': 1.0})
+(('how', 'have'), {'you': 1.0})
+(('hello', 'there'), {'friend.': 1.0})
+(('you', 'slept'), {'today?': 1.0})
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Dataset-Preprocessing">Dataset Preprocessing<a class="anchor-link" href="#Dataset-Preprocessing">¶</a></h4><p>There are a few preprocessing steps I'll perform to improve the results. For one, I'll prepend a <code>"[s]"</code> and append a <code>"[/s]"</code> to each sentence. When each sentence is generated, the first word will be selected from all of the ngrams that start with <code>"[s]"</code> and words will be selected until a <code>"[/s]"</code> is generated. Moreover, words will be transformed to lowercase and spaces will be added before and after each punctuation mark.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [6]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sample</span> <span class="o">=</span> <span class="s2">"Sample! See? Often, we'll swim (but only sometimes)?!?"</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="k">def</span> <span class="nf">preprocess</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">"([.,!?()])"</span><span class="p">,</span> <span class="sa">r</span><span class="s2">" \1 "</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">"\s{2,}"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">preprocess</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>sample ! see ? often , we'll swim ( but only sometimes ) ? ! ? 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now it's time to create the dictionary that will hold all of our preprocessed messages.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [206]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">names_dict</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"allo_messages_anon.csv"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+        <span class="n">sender</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">'sender_id'</span><span class="p">]</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">"text"</span><span class="p">]</span>
+        
+        <span class="c1"># IF condition filters out messages with blank text</span>
+        <span class="k">if</span> <span class="n">body</span><span class="p">:</span>
+            <span class="n">names_dict</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"[s] "</span><span class="o">+</span> <span class="n">preprocess</span><span class="p">(</span><span class="n">body</span><span class="p">)</span> <span class="o">+</span> <span class="s2">" [/s]"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [207]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">names_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[207]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>dict_keys(['159', '14', '1', '54', '156', '3', '2'])</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [208]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">names_dict</span><span class="p">[</span><span class="s1">'1'</span><span class="p">][</span><span class="mi">30</span><span class="p">:</span><span class="mi">40</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[208]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>["[s] i'm still recovering from last night lol [/s]",
+ '[s] same [/s]',
+ '[s] me too !  [/s]',
+ '[s] ^ [/s]',
+ '[s] it is [/s]',
+ '[s] ^^ but totally accurate lol [/s]',
+ '[s] almost done [/s]',
+ "[s] i'm still working on it [/s]",
+ "[s] it's going pretty well [/s]",
+ '[s] idk , i was thinking monday or tuesday [/s]']</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The sender_IDs that I'm interested in are 54, 1, 14, 3, and 2. The remaining two are Allo bots that only have a handful of messages.</p>
+<h4 id="Generating-the-Language-Models">Generating the Language Models<a class="anchor-link" href="#Generating-the-Language-Models">¶</a></h4><p>Now I'll make a function to generate the ngram probabilities using the code from earlier:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [209]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">estimate_ngram_probs</span><span class="p">(</span><span class="n">sentences</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    
+    <span class="n">counts</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">Counter</span><span class="p">())</span>
+    
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">sentences</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ngram</span> <span class="ow">in</span> <span class="n">iter_ngrams</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">counts</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">ngram</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">ngram</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+            
+    <span class="c1"># Normalize probabilities to sum to 1.0</span>
+    <span class="k">for</span> <span class="n">ngram</span><span class="p">,</span> <span class="n">word_counts</span> <span class="ow">in</span> <span class="n">counts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">word_counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="n">counts</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">word</span><span class="p">:</span> <span class="n">count</span> <span class="o">/</span> <span class="n">total</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">word_counts</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+    <span class="k">return</span> <span class="n">counts</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [210]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">c</span> <span class="o">=</span> <span class="n">estimate_ngram_probs</span><span class="p">(</span><span class="n">names_dict</span><span class="p">[</span><span class="s1">'54'</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">c</span><span class="p">[(</span><span class="s1">'[s]'</span><span class="p">,</span> <span class="s2">"you're"</span><span class="p">)])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{'caught': 0.25, 'dead': 0.25, 'just': 0.25, 'welcome': 0.25}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I'll create a list of IDs and iterate over it to populate a dictionary with each person's ngram language model.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [211]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">,</span> <span class="s1">'14'</span><span class="p">,</span> <span class="s1">'54'</span><span class="p">]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+
+<span class="n">people_ngrams</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+    <span class="n">people_ngrams</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">estimate_ngram_probs</span><span class="p">(</span><span class="n">names_dict</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have the language models! And we have five in particular, where each model represents the word choice tendencies of each of us (including the Google Assitant). I'll leave it to you to try and guess which one is the Google Assistant ;D</p>
+<p>For now I chose <code>n=3</code> (later on we'll explore changing n). So let's look at the results of the language model for sentences that start with "you're". The particular trigram for that case will be <code>('[s]', "you're")</code> followed by the probability of all of the possible following words. So for user '1', 17.64% of the time a message begins with <code>"you're"</code> it is followed by <code>'welcome'</code>. Makes sense!</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [212]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">people_ngrams</span><span class="p">[</span><span class="s1">'1'</span><span class="p">][(</span><span class="s1">'[s]'</span><span class="p">,</span> <span class="s2">"you're"</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[212]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>{'[/s]': 0.029411764705882353,
+ 'always': 0.029411764705882353,
+ 'amazing': 0.029411764705882353,
+ 'being': 0.029411764705882353,
+ 'doing': 0.029411764705882353,
+ 'ginny': 0.029411764705882353,
+ 'going': 0.08823529411764706,
+ 'gonna': 0.058823529411764705,
+ 'here': 0.029411764705882353,
+ 'just': 0.029411764705882353,
+ 'killin': 0.029411764705882353,
+ 'listening': 0.029411764705882353,
+ 'not': 0.058823529411764705,
+ 'perfect': 0.029411764705882353,
+ 'right': 0.029411764705882353,
+ 'so': 0.11764705882352941,
+ 'the': 0.11764705882352941,
+ 'welcome': 0.17647058823529413,
+ 'welcome😘': 0.029411764705882353}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [14]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">people_ngrams</span><span class="p">[</span><span class="s1">'2'</span><span class="p">][(</span><span class="s1">'[s]'</span><span class="p">,</span> <span class="s2">"you're"</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[14]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>{'a': 0.07317073170731707,
+ 'adorable': 0.024390243902439025,
+ 'awake': 0.024390243902439025,
+ 'cruel': 0.024390243902439025,
+ 'definitely': 0.04878048780487805,
+ 'drunk': 0.04878048780487805,
+ 'exactly': 0.024390243902439025,
+ 'funny': 0.024390243902439025,
+ 'going': 0.024390243902439025,
+ 'gonna': 0.07317073170731707,
+ 'good': 0.024390243902439025,
+ 'just': 0.04878048780487805,
+ 'not': 0.024390243902439025,
+ 'probably': 0.024390243902439025,
+ 'reading': 0.024390243902439025,
+ 'retarded': 0.024390243902439025,
+ 'right': 0.024390243902439025,
+ 'sadistic': 0.024390243902439025,
+ 'seriously': 0.04878048780487805,
+ 'so': 0.17073170731707318,
+ 'staying': 0.024390243902439025,
+ 'still': 0.024390243902439025,
+ 'such': 0.024390243902439025,
+ 'sure': 0.04878048780487805,
+ 'the': 0.024390243902439025,
+ 'welcome': 0.024390243902439025}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [15]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">people_ngrams</span><span class="p">[</span><span class="s1">'3'</span><span class="p">][(</span><span class="s1">'[s]'</span><span class="p">,</span> <span class="s2">"you're"</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[15]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>{'peachy': 0.16666666666666666,
+ 'pure': 0.16666666666666666,
+ 'the': 0.5,
+ 'welcome': 0.16666666666666666}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [16]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">people_ngrams</span><span class="p">[</span><span class="s1">'54'</span><span class="p">][(</span><span class="s1">'[s]'</span><span class="p">,</span> <span class="s2">"you're"</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[16]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>{'caught': 0.25, 'dead': 0.25, 'just': 0.25, 'welcome': 0.25}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [17]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">people_ngrams</span><span class="p">[</span><span class="s1">'14'</span><span class="p">][(</span><span class="s1">'[s]'</span><span class="p">,</span> <span class="s2">"you're"</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[17]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>{'a': 0.14285714285714285,
+ 'adorable': 0.14285714285714285,
+ 'amazing': 0.14285714285714285,
+ 'in': 0.14285714285714285,
+ 'perfect': 0.14285714285714285,
+ 'taking': 0.14285714285714285,
+ 'welcome': 0.14285714285714285}</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Sentence-Generation">Sentence Generation<a class="anchor-link" href="#Sentence-Generation">¶</a></h4><p>The final step is generating the sentences and this is accomplished with the following function:</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [213]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="k">def</span> <span class="nf">generate_sentences</span><span class="p">(</span><span class="n">ngrams</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="sd">"""Sample k sentences from given ngram model.</span>
+<span class="sd">    Params:</span>
+<span class="sd">      ngrams....ngram language model; a dict from ngram tuple to a dict</span>
+<span class="sd">      k.........number of sentences to sample</span>
+<span class="sd">    """</span>
+    <span class="c1"># List of all ngrams that start with [s]</span>
+    <span class="n">start_ngrams</span> <span class="o">=</span> <span class="p">[</span><span class="n">ngram</span> <span class="k">for</span> <span class="n">ngram</span> <span class="ow">in</span> <span class="n">ngrams</span> <span class="k">if</span> <span class="n">ngram</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'[s]'</span><span class="p">]</span>
+    
+    <span class="n">sentences</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>  <span class="c1"># sample k sentences.</span>
+        <span class="c1"># sample uniformly from all start ngrams.</span>
+        <span class="n">ngram</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">start_ngrams</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sentence</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">sentence</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">ngram</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">sentence</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">'[/s]'</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span> <span class="o"><</span> <span class="mi">50</span><span class="p">:</span>  <span class="c1"># while not at end of sentence.</span>
+            <span class="c1"># sample the next word</span>
+            <span class="n">sampled_word</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ngrams</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>      <span class="c1"># words</span>
+                                            <span class="n">p</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">ngrams</span><span class="p">[</span><span class="n">ngram</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()),</span>  <span class="c1"># probabilities</span>
+                                            <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">sentence</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sampled_word</span><span class="p">)</span>
+            <span class="c1"># update most recent ngram</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">></span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">ngram</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">ngram</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:])</span> <span class="o">+</span> <span class="p">[</span><span class="n">sampled_word</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ngram</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">sampled_word</span><span class="p">])</span>
+        <span class="n">sentences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sentence</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">sentences</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [183]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">people_sentences</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="c1"># generate sentences for each person</span>
+<span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+    <span class="n">people_sentences</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">generate_sentences</span><span class="p">(</span><span class="n">people_ngrams</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    
+<span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Sentences for id"</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">people_sentences</span><span class="p">[</span><span class="nb">id</span><span class="p">]):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[s]"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[/"</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Sentences for id 1
+ whaaaaaaat is this 
+ john is outside still 
+ okay do you know when i start to get by next year and then generate random sentences based on those probabilities =p 
+ https://portal . stretchinternet . com/sxu/# 
+ whaddaaauuppppp 
+
+
+Sentences for id 2
+ we've used up to ? 
+ oops lol 
+ god no joke me too well 
+ ooooohhh juno ! ! ! 
+ truthfully i have earned more money but cuz you have the time . we'd have to be like all my documents in my trunk is open , everything is on tonight❤️ 
+
+
+Sentences for id 3
+ make sure to laugh at something silly today 😆 
+ that word isn't in my vocabulary 
+ 486 days . 
+ 16 ounces = 1 pound 
+ he's 5ft 5in tall . 
+
+
+Sentences for id 14
+ fuck him 
+ then we went out dancing for his bday zzzzzzz 
+ irrelevant af dumbass google 
+ nothing 
+ k 
+
+
+Sentences for id 54
+ @google penis 
+ haha i'll most likely have to be at the peak of a new couch 
+ brian obviously hasn't though 
+ 👏👏👏👏👏 
+ u wut 
+
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Favorites">Favorites<a class="anchor-link" href="#Favorites">¶</a></h4><p>Very cool =D I ran this a few times and saved some of my favorites.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [198]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">favorites</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">favorites</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="s2">":"</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[s]"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[/"</span><span class="p">),</span> <span class="n">sep</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span>
+        
+<span class="c1"># save the favorites to an external file</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">"favorites.txt"</span><span class="p">,</span> <span class="s2">"w+"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">favorites</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">favorites</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">":"</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[s]"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[/"</span><span class="p">)</span> <span class="o">+</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span> 
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>54: tell them everything 
+54: joe 💜💜💜💜💜 
+54: wish we could ride a goat/ram/donkey to climb mountains lol 
+54: they're in the forest 
+54: 🎂 
+54: lit 
+54: man the fps is pretty bad in some spots 
+54: shakedown hawaii looks like it's puking from its eyes 
+54: because i wasn't sure where you're supposed to aim it and it has multiplayer but it'd not really a party game like snip your dicks 
+54: took out 3/4 of his health lol 
+54: haven't watched season 5 and 6 the past two days 
+54: thought i had bought the case best buy is definitely the best show ever created 
+54: or are you driving an ice cream truck ? ? ? 
+54: lots of stuff can kill in a suitcase tbh 
+54: goodness yeah don't think they have legs you can do anything with friends lmao 
+54: botw hype though lol 
+54: right off the sea at the peak of a new couch 
+3: today , they played the twins . 
+3: author and artist dr . seuss pronounced his name to rhyme with "voice" , 16" 
+3: i'm not sure 😕 
+3: "all you need is love . but a little self-conscious 😉 
+3: sidewalks may be slippery 
+3: had a pretty good day 😀 
+3: your smile is contagious 😀 
+3: had a pretty good day 😀 
+3: ok , i don't understand 
+3: but i'm pretty sure i can't swim 🏊 
+3: sometimes i make mistakes 
+3: 💩 
+3: you always know the perfect thing to say to me 
+3: actually , i'm engaged 
+3: bernie sanders is the vice president of united states of america . 
+3: make sure to laugh at something silly today 😆 
+1: spaghetti , of course ! 
+1: brian's probably still sleeping 
+1: woah i sounded like he plans on going to keating now so they're gonna have spaghetti for dinner tonight ❤💕❤ 
+1: nigga an old face is gonna get like 6 hours of office hours like every day but i also forget them so when i first farted in front of you to take a look through when get the discount from them , it means 💯 ! ! 
+1: brainstorm with me 
+1: life sucks and you can sell them for free as long as you and hopefully insurance covers all of them is groupon 
+1: hah ! that's exciting ! it's kinda subjective 
+1: of course my financial situation i am in need of a slut whore than a bitch 
+1: modern family is on monday/wednesday . i'll likely be staying in the bathroom lol 
+1: whatever works best for you betch ! ! 
+1: honestly i might need to work , but i'd hafta be back for that course is the last puzzle 🙃🔫 
+1: we need to bring anything extra lol it was a very special day today and everyday for the first question of the time ? 
+1: "bernie is too good 🙃🔫 
+1: mostly just wasting my life away on reddit lol 
+1: mmmmmmmm dairy queen sounds so hard pook 
+1: norman passed the test , i'll text you once you start over and try again 
+1: better than my shitty day lol 
+1: call it friendship , call it friendship , call it stockholm syndrome , call it friendship , call it whatever you'd like it so i ended up getting there around 11:00 
+1: lmfao what the fuck is that a yes lol 
+1: lit 
+1: hell all 
+1: homework 🙃🔫 when will you hafta do ? ? 
+1: starts in 15 minutes early , tell my fiance i told him he's going to that lol 
+2: bae what're you gonna play mlb ? ? i graduate tomorrow lol 
+2: michael's in the toaster oven for sure ? you have a great flight my love ? 
+2: watching this baseball movie called little big league with richard and my mom this morning , my love , i understand . when is your plan for the after party and i know lol i feel so drained , i will be there at 4 ? 
+2: some old ass indian guy who records the games , he doesn't mean it michael 
+2: literally screaming in childrens faces rn 
+2: idk how to easily get you drunk ? 
+2: aunt maureen is gonna come get you tonight and sleep over ? ? 
+2: let's see split this weekend or do you leave for a little time then i stopped drinking and became the police for our social work 
+2: i just completely forgot lmfao 
+2: aunt maureen is gonna come to your group on the plane and stuff 
+2: guys , i'll do damage control 
+2: forever same 
+2: finally turned those retarded ass like termination assignment for my other class the first time doing this yesterday while those were in there , when do you guys are in great shape and can work or not 
+2: wave hand in front of alarm , press the button with the ywca lol 
+2: on april 4th it'll be worth it though , it gets very good lol 
+2: i'd rather go to bed . hope you have a parent-child visit in palatine today from 4-7:30 and homework that's due tomorrow 😕 
+2: i think we should go before my class starts , and it's all good . have you eaten ? 
+2: meanwhile i'm dead inside 
+2: anyone know the name lily and it's amazing how consistent they've been in how inconsistent they are lol that's where i'm co-moderating this big ass event with the crowds 
+2: fuqin frodo 
+2: 🔪👩🏾 
+2: text me before you leave once you start it'll be gross 
+2: google thinks you're bad ass betch and hot af , never doubt that lol for the graduate level students . im not as much as you saying you'll look elsewhere 
+2: walgreens wouldn't have to pay labor cost to move my stone to a new one until we find you in money ! 
+2: chicken fried rice ? ? 
+2: make sure you eat that for fun or did katie ask you to ask about it 
+2: oh my god it's only 2016 , not 2017 . and i miss your face 
+2: grr my gifs take forever to frickin load 
+2: everyone is dead 
+2: aunt maureen is gonna be so great . . . . 
+2: let me know when we're going to burn down the food sounds great i just finalized my school friends and stuff the next class on the last program to be used to making dinner cuz you're gonna be in aurora . daaaamn , kick his ass , he i
+14: all of my sadness , i have had some fun . today i gotta run some errands for my celebration 
+14: nap time 😴 ttyl tysm ilysm 
+14: always time for dinner 🍴 time for dancing 💃 🕺💁🤷‍♀️💁‍♂️🤷‍♂️💵💵💰💰😅😅 
+14: 💩 
+14: bae's 22nd bday is today her car wouldn't start we helped save her i got a notification that you guys talking about it . . 
+14: ok , so if i were planning on going out . ugh ! maybe next week for my birthday ? 
+14: stayed up watching sick ass dancing videos and getting a rental car 
+14: hollywood grill with gina the photographer might be gay and i give a fuck 
+14: i'm home 🏡 it went pretty well ! so glad we have to work by rihanna on his speaker 🔊 and i'm pretty sure i receive special treatment basically no matter what lol ( extra hours , etc lol tysm ilysm same always tbh 
+14: there's no reason for me to be hit by it 
+14: slowly but surely branch our way out ! thank god , i swear it kills me tysm ilysm 
+14: gaby fell asleep again only we hadn't finalized anything and she was good and very emotional because denny made me feel like death *** ikr fml i hate this weather . it was weird 
+14: irrelevant af dumbass google 
+14: cumshot fertility 
+14: haircut , car stuff , tutoring , other errands , etc lol tysm ilysm 
+14: nvm going to get us some fish and make some good money 💰 it's so perfect 
+14: what the fuck bae 
+14: that's where i am feelin myself and look hot af tysm ilysm 
+14: headed home tysm ilysm what're you guys , the guy i met this guy is ignorant and white and male . . who am i 
+14: now i need to recover from last night's escapades so i brought a grey sweater to show him i'm such a matchmaker ! tysm ilysm 
+14: i'll punch 🤛 you if you saw the alarm without knowing what it means to be a woman 
+14: seemed to be a hoe tysm ilysm good night 🌙😘😴💤 
+14: y'all should've seen ma gurl beet dat bitch 
+14: skank 
+14: sorry not sorry 
+14: ass and dick 
+14: ilysm good night 😴💤😘🌙 good morning 😃☀️ good night 😘😴💤🌙 
+14: having soup and drinking water . gonna shower and go out possibly alone 
+14: ate all of that sephora perfume bottle last night no , i did 
+14: weak bitches 🙄 
+14: rip to all kill me tysm ilysm 
+14: done with , piece of shit that i am so tired took a nap , had really weird and he might be gay and i don't understand how we appoint 12 people to basically be supreme people above the law like wtf honestly of the bread at work ,
+14: woke up several times and still like wtf do you need screwdrivers and shit . lmao ik i'm jk amazing omg i'm getting ready to go out lol 
+14: it's v complicated in my cream of chicken soup 
+14: fapping 
+14: possibly possibly not oh well i ate , he said kiss my cheek so i private tutored , then getting dinner tomorrow kthxbai 
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Closing-Remarks">Closing Remarks<a class="anchor-link" href="#Closing-Remarks">¶</a></h4><p>Considering how simple the language model is, the results are pretty impressive! One major disadvantage is that the vocabulary of each bot is limited to ngrams that are present in the dataset. So for instance, if the language model consists of the following trigrams:</p>
+<p><code>('you', 'are'), {'nice': 0.5, 'funny': 0.5}</code>
+<code>('he', 'is'), {'cool': 1.0}</code></p>
+<p>The bots will never generate a sentence like "you are cool", even though those three words exist in the bot's vocabulary. With that being said, it could be possible to generate a sentence like <code>"he thinks you are cool"</code> (assuming there are a few more ngrams in the vocabulary than the three I listed in the example). Remember that these bots know absolutely nothing about sentence structure or parts of speech, yet it's possible for them to generate grammatically correct sentences. Pretty cool!! As we increase <code>n</code>, the generated sentences are more likely to be grammatically and semantically correct, since the ngrams contain more information regarding the proper order of words. However, the expressiveness of the bots decrease because the occurrences of those high-n ngrams will be low in a smaller dataset. The best way to improve the expressiveness of the bots is to increase the number of sentences in the dataset. I'll conclude by showing a few sentences generated with <code>n=2</code>. In the future, I plan to combine the Facebook and Allo datasets to improve the language models. Moreover, I'll explore other language models, including one based on a recurrent neural network.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [214]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">,</span> <span class="s1">'14'</span><span class="p">,</span> <span class="s1">'54'</span><span class="p">]</span>
+<span class="n">n</span> <span class="o">=</span> <span class="mi">2</span>
+
+<span class="n">people_ngrams</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">people_sentences</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+    <span class="n">people_ngrams</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">estimate_ngram_probs</span><span class="p">(</span><span class="n">names_dict</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">people_sentences</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">generate_sentences</span><span class="p">(</span><span class="n">people_ngrams</span><span class="p">[</span><span class="nb">id</span><span class="p">],</span> <span class="mi">15</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    
+<span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Sentences for id"</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">people_sentences</span><span class="p">[</span><span class="nb">id</span><span class="p">]):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">sentence</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[s]"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">"[/"</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Sentences for id 1
+ same 
+ lmao 
+ tysm for word hahaha ! 
+ ^ 
+ yeah i think that's always been dark for you tell , not good night 
+ spaghetti . . yeah well this ? i love chicken fried rice and it twice and work , he's probably need you should be able to send that pay though too ! ali ? 
+ when you ! 
+ yupp , i miss volleyball 
+ it was the commute three christmases ago lol 
+ now 
+ ^^^^ 
+ i could i don't worry about it to meet up 
+ i totally called localcast , so far 😁 
+ what you did a recommendation lol" 
+ i was fun . 
+
+
+Sentences for id 2
+ thank you get on being filling in the mom lol how long it'll be able to end up your trip this one tomorrow then to being 10pm lol thats why ? i got up pookah dimples ! have that you'll do more ! 
+ i don't get good night 
+ good flight my graduation sunday or just watch ? 
+ lmao 
+ if you can ! ? ? 
+ i should've asked me 
+ what're you be at your game , good night 
+ that's really cool . . . wednesday i'm going to look like 2 teams today , the soccer field until i wanted 
+ omfg google 
+ uggghhhh 
+ *soooon 
+ also really close ? 
+ if i just realized i wanna be likely won't be busy ? 
+ google is this but overall it :p i'll check you're seriously ridiculous amount to cry from 1-5 tomorrow ? ? 
+ truuu 
+
+
+Sentences for id 3
+ here is your daily weather forecast 
+ i don't understand 
+ you're the latest 📰 
+ i found 
+ here's the time by the dictionary says 
+ ( that's hello in the web 
+ i found 
+ ok . ( etf ) 
+ 526 days . 
+ here's what i do ? ' result: 
+ ok , you're the web 
+ here's a game , i found on the most present 
+ here is your daily weather forecast 
+ here's a result 
+ check out these ? ' result: 
+
+
+Sentences for id 14
+ i got flautas as of ( some friends 
+ lmfao 
+ the night 💤😴😘🌙 
+ tysm ilysm 
+ v offended because i just got food but it "fully convertible weather 
+ amazing 
+ conversation , so hungry and stuff 
+ ^ 
+ just laying out dancing 
+ i'm 🏡 it up and chocolate shake . 
+ lmfao 
+ i hid from portillo's 
+ hell all 
+ underground club i never 
+ he fell asleep again and interesting fun but i guess , it 
+
+
+Sentences for id 54
+ lol 
+ very critical of this crowd 
+ and gamestop thursday and yeah i was another quest regarding those indie showcase , guess 😓 
+ i think 
+ ok 
+ not 
+ sounds fun at ? 
+ this ml 
+ so far out and fire arrowed* 
+ does he was sleeping so not the mario look at 11 then 
+ or the others . com/r/nintendoswitch/comments/5y5gbo/the_legend_of_zelda_breath_of_the_wild_amiibo/ 
+ the nes zelda sounds good for a defense boost 
+ the scene i picked grey 
+ have to internet so celebrating it was the worst thing ? 
+ ^ 
+
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        " linebreaks: { automatic: true, width: '95% container' }, " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+
+            </div><!-- /.entry-content -->
+
+
+        </div><!-- /.eleven.columns -->
+
+<div class="three columns">
+
+ <ul>
+ </ul>
+
+<!-- <h4>Pages</h4>
+      <li><a href="/pages/about.html">About</a></li>
+      <li><a href="/pages/contact.html">Contact</a></li>
+-->
+
+<h4>Categories</h4>
+<ul class="blank">
+		<li><a href="/category/post.html">Post</a></li>
+</ul>
+
+
+<h4>Tags</h4>
+<ul class="blank">
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB758D30>, <pelican.contents.Article object at 0x0000012EBB760F28>]"><a href="/tag/nlp.html">nlp</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB758D30>, <pelican.contents.Article object at 0x0000012EBB760F28>, <pelican.contents.Article object at 0x0000012EBB7E5CF8>, <pelican.contents.Article object at 0x0000012EB9C64898>]"><a href="/tag/python.html">python</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB7E5CF8>, <pelican.contents.Article object at 0x0000012EB9C64898>]"><a href="/tag/volleyball.html">volleyball</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB7E5CF8>, <pelican.contents.Article object at 0x0000012EB9C64898>]"><a href="/tag/stats.html">stats</a></li>
+</ul>
+
+
+
+</div> </div><!-- /.row -->
+
+
+</section>
+
+       </div><!-- /.row -->
+    </div><!-- /.container -->
+
+
+       <div class="container.nopad bg">
+
+    
+        <footer id="credits" class="row">
+          <div class="seven columns">
+            <div class="row">
+              <ul class="socbtns">
+
+
+
+
+
+              </ul>
+            </div>
+          </div>
+        </footer>
+
+    </div>
+
+
+  <script src="/theme/js/libs/jquery-1.9.1.min.js"></script>
+  <script src="/theme/js/libs/gumby.min.js"></script>
+  <script src="/theme/js/plugins.js"></script>
+</body>
+</html>

@@ -9,11 +9,11 @@
         <!-- Mobile viewport optimized: j.mp/bplateviewport -->
         <meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1">
 
-        <link rel="stylesheet" type="text/css" href="https://mdrews93.github.io/mdrews93/theme/gumby.css" />
-        <link rel="stylesheet" type="text/css" href="https://mdrews93.github.io/mdrews93/theme/style.css" />
-        <link rel="stylesheet" type="text/css" href="https://mdrews93.github.io/mdrews93/theme/pygment.css" />
+        <link rel="stylesheet" type="text/css" href="/theme/gumby.css" />
+        <link rel="stylesheet" type="text/css" href="/theme/style.css" />
+        <link rel="stylesheet" type="text/css" href="/theme/pygment.css" />
 
-        <script src="https://mdrews93.github.io/mdrews93/theme/js/libs/modernizr-2.6.2.min.js"></script>
+        <script src="/theme/js/libs/modernizr-2.6.2.min.js"></script>
 
 
 
@@ -28,17 +28,17 @@
         <div class="row">
 
           <header id="banner" class="body">
-                  <h1><a href="https://mdrews93.github.io/mdrews93/">Michael's Blog <strong></strong></a></h1>
+                  <h1><a href="/">Michael's Blog <strong></strong></a></h1>
           </header><!-- /#banner -->
 
             <div id="navigation" class="navbar row">
               <a href="#" gumby-trigger="#navigation &gt; ul" class="toggle"><i class="icon-menu"></i></a>
              
               <ul class="columns">
-                <li><a href="https://mdrews93.github.io/mdrews93/">Home</a></li>
+                <li><a href="/">Home</a></li>
 
-                <li><a href="https://mdrews93.github.io/mdrews93/pages/about.html">About</a></li>
-                <li><a href="https://mdrews93.github.io/mdrews93/pages/contact.html">Contact</a></li>
+                <li><a href="/pages/about.html">About</a></li>
+                <li><a href="/pages/contact.html">Contact</a></li>
 
 
               </ul>
@@ -52,7 +52,7 @@
 
             <header>
               <h2 class="entry-title">
-                <a href="https://mdrews93.github.io/mdrews93/ngram-language-model-part-one.html" rel="bookmark"
+                <a href="/ngram-language-model-part-one.html" rel="bookmark"
                    title="Permalink to NGram Language Model Part One">NGram Language Model Part One</a></h2>
            
             </header>
@@ -61,7 +61,7 @@
                 Sun 07 May 2017
               </abbr>
               <address class="vcard author">By 
-                <a class="url fn" href="https://mdrews93.github.io/mdrews93/author/michael-drews.html"> Michael Drews</a>
+                <a class="url fn" href="/author/michael-drews.html"> Michael Drews</a>
               </address>
             </footer><!-- /.post-info -->
             <div class="entry-content">
@@ -1067,7 +1067,7 @@ h6:hover .anchor-link {
 <h4 id="Dataset-Retrieval">Dataset Retrieval<a class="anchor-link" href="#Dataset-Retrieval">¶</a></h4><p>In short, it turned out that the file created by the app's backup feature didn't contain plain text. This is beneficial for a backup file, because it can dramatically decrease the file's size; however, I wanted the plain text so it was extremely disappointing. Previously I just assumed that messages were stored remotely but in researching the issue, I found out that the messages are actually stored locally on the phone in an SQLite database. Perfect!!</p>
 <p>Since my phone is rooted, I was able to access the file from <code>/data/data/com.google.android.apps.fireball/databases/fireball.db</code></p>
 <p>Then I downloaded Mozilla Firefox and the <a href="https://addons.mozilla.org/en-US/firefox/addon/sqlite-manager/">SQLite Manager Add-On</a> so that I could explore the various tables.</p>
-<p>Since I ultimately want a dataset in CSV or JSON format where each row/record contains a message, the sender, and the text size. It turns out that the two tables that contained this information were named "message" and "Fireball_users." Here's the SQL statement I used to extract just the fields that I wanted:</p>
+<p>I ultimately wanted a dataset in CSV or JSON format where each row/record contains a message, the sender, and the text size. It turns out that the two tables that contained this information were named "message" and "Fireball_users." Here's the SQL statement I used to extract just the fields that I wanted:</p>
 </div>
 </div>
 </div>
@@ -1184,22 +1184,22 @@ h6:hover .anchor-link {
  </ul>
 
 <!-- <h4>Pages</h4>
-      <li><a href="https://mdrews93.github.io/mdrews93/pages/about.html">About</a></li>
-      <li><a href="https://mdrews93.github.io/mdrews93/pages/contact.html">Contact</a></li>
+      <li><a href="/pages/about.html">About</a></li>
+      <li><a href="/pages/contact.html">Contact</a></li>
 -->
 
 <h4>Categories</h4>
 <ul class="blank">
-		<li><a href="https://mdrews93.github.io/mdrews93/category/post.html">Post</a></li>
+		<li><a href="/category/post.html">Post</a></li>
 </ul>
 
 
 <h4>Tags</h4>
 <ul class="blank">
-	    <li class="tag-[<pelican.contents.Article object at 0x0000019715EDF240>]"><a href="https://mdrews93.github.io/mdrews93/tag/nlp.html">nlp</a></li>
-	    <li class="tag-[<pelican.contents.Article object at 0x0000019715EDF240>, <pelican.contents.Article object at 0x00000197160E1FD0>, <pelican.contents.Article object at 0x00000197132EFA20>]"><a href="https://mdrews93.github.io/mdrews93/tag/python.html">python</a></li>
-	    <li class="tag-[<pelican.contents.Article object at 0x00000197160E1FD0>, <pelican.contents.Article object at 0x00000197132EFA20>]"><a href="https://mdrews93.github.io/mdrews93/tag/volleyball.html">volleyball</a></li>
-	    <li class="tag-[<pelican.contents.Article object at 0x00000197160E1FD0>, <pelican.contents.Article object at 0x00000197132EFA20>]"><a href="https://mdrews93.github.io/mdrews93/tag/stats.html">stats</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB758D30>, <pelican.contents.Article object at 0x0000012EBB760F28>]"><a href="/tag/nlp.html">nlp</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB758D30>, <pelican.contents.Article object at 0x0000012EBB760F28>, <pelican.contents.Article object at 0x0000012EBB7E5CF8>, <pelican.contents.Article object at 0x0000012EB9C64898>]"><a href="/tag/python.html">python</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB7E5CF8>, <pelican.contents.Article object at 0x0000012EB9C64898>]"><a href="/tag/volleyball.html">volleyball</a></li>
+	    <li class="tag-[<pelican.contents.Article object at 0x0000012EBB7E5CF8>, <pelican.contents.Article object at 0x0000012EB9C64898>]"><a href="/tag/stats.html">stats</a></li>
 </ul>
 
 
@@ -1233,8 +1233,8 @@ h6:hover .anchor-link {
     </div>
 
 
-  <script src="https://mdrews93.github.io/mdrews93/theme/js/libs/jquery-1.9.1.min.js"></script>
-  <script src="https://mdrews93.github.io/mdrews93/theme/js/libs/gumby.min.js"></script>
-  <script src="https://mdrews93.github.io/mdrews93/theme/js/plugins.js"></script>
+  <script src="/theme/js/libs/jquery-1.9.1.min.js"></script>
+  <script src="/theme/js/libs/gumby.min.js"></script>
+  <script src="/theme/js/plugins.js"></script>
 </body>
 </html>
