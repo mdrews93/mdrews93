@@ -12,6 +12,8 @@ TIMEZONE = 'America/Chicago'
 
 DEFAULT_LANG = 'en'
 
+DISQUS_SITENAME = "mdrews93"
+
 # Feed generation is usually not desired when developing
 FEED_ALL_ATOM = None
 CATEGORY_FEED_ATOM = None

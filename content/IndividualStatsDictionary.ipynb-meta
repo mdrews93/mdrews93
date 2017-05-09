@@ -1,0 +1,7 @@
+Title: Individual Volleyball Stats Part One
+Slug: individual-volleyball-stats-part-one
+Date: 2017-05-03 01:00
+Category: Post
+Tags: python, volleyball, stats
+author: Michael Drews
+description: My first post! Using python, I crawl through a webpage to extract the season stats for a particular volleyball player. These stats are stored in a python dictionary for easy and quick retrieval.

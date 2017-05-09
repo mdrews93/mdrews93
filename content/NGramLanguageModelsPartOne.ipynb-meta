@@ -1,0 +1,7 @@
+Title: NGram Language Model Part One
+Slug: ngram-language-model-part-one
+Date: 2017-05-07 22:00
+Category: Post
+Tags: python, nlp
+author: Michael Drews
+description: In part one, I briefly describe ngram language models and retrieving Google Allo's SQLite database. By calculating the probabilities of every possible n-gram in a dataset, we can generate sentences with the same word choice tendencies as the author of the messages in the dataset. I plan to do just that for myself and a few friends using the messages we've sent to one another via Google Allo over the last few months.
